@@ -1,1 +1,2 @@
-# exchanger
+npm i ->
+npm start
