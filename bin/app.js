@@ -1,7 +1,7 @@
 const Koa = require('koa');
 const bodyParser = require('koa-bodyparser');
 const logger = require('koa-logger');
-var serve = require('koa-static');
+const serve = require('koa-static');
 
 const {port} = require('../config');
 const {session} = require('../routes');
