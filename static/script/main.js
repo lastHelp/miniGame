@@ -51,7 +51,8 @@ function reset(arena, size = 3,logicGame) {
     const blockClass = 'square';
     const pickBoxElClass  = 'origin'; 
     const colorAtribute = 'data-color';
-    const logic = new GameLogic(size,blockClass,pickBoxElClass,colorAtribute)
+
+    const logic = new GameLogic(size,blockClass,pickBoxElClass,colorAtribute);
     
     reset(arena, size,logic);
 
