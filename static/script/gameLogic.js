@@ -4,8 +4,10 @@ function GameLogic(rowCount,blockClass,pickBoxElClass,colorAtribute) {
     const $ = (selector,isAll=false)=>{
         return  (isAll)? Array.from(document.querySelectorAll(selector)):document.querySelector(selector);
     }
-    const selectAll = true;
 
+    const selectAll = true;
+    const checkLoginReqExp = new RegExp('^(?=.*[A-Za-z0-9]$)[A-Za-z][A-Za-z\d.-]{0,19}$');
+    
     this.blockClass = blockClass; 
     this.pickBoxElClass = pickBoxElClass ;
     this.colorAtribute = colorAtribute; 
@@ -13,28 +15,28 @@ function GameLogic(rowCount,blockClass,pickBoxElClass,colorAtribute) {
 
     this.rowCount = rowCount;
     this.amountStep = 0;
-    this.playerName = false;
+    this.namePlayer = false;
     this.isFinish = ()=> $(`.${pickBoxElClass}`,true).length === $(`.${blockClass}`,true).length;
     this.getBlocks = ()=>$(`.${blockClass}`,selectAll);
     this.indexPickElCol = new Set([0]); 
    
-   this.setPlayerName = ()=>{
+   this.setnamePlayer = ()=>{
        const textMes = "For start, please enter your name";
 
-       const playerName = (prompt(textMes,"")).trim();
+       const namePlayer = (prompt(textMes,"")).trim();
 
-       if(playerName) {
+       if( checkLoginReqExp.test(namePlayer) ) {
 
-            this.playerName = playerName;
+            this.namePlayer = namePlayer;
        }  else {
-           this.setPlayerName();
+           this.setnamePlayer();
        }
    }
 
    this.handler =  event => {
       
-       if( !this.playerName ) {
-           this.setPlayerName();
+       if( !this.namePlayer ) {
+           this.setnamePlayer();
        }
     const {pickBoxElClass,indexPickElCol,getBlocks,rowCount,colorAtribute} = this;
        
@@ -64,7 +66,7 @@ function GameLogic(rowCount,blockClass,pickBoxElClass,colorAtribute) {
       
         this.amountStep = 0;
         this.indexPickElCol = new Set([0]);
-        this.playerName = false;
+        this.namePlayer = false;
         
     }
 
@@ -72,7 +74,34 @@ function GameLogic(rowCount,blockClass,pickBoxElClass,colorAtribute) {
 
         if( this.isFinish() ) {
 
-            alert(`${this.playerName} you did it on the ${this.amountStep} moves`);
+            const {namePlayer,amountStep} = this;
+            alert(`${namePlayer} you did it on the ${amountStep} moves`);
+            const reqOpt = {
+                method:"post",
+                headers: {
+                    'Accept': 'application/json, text/plain, */*',
+                    'Content-Type': 'application/json'
+                  },
+                body:JSON.stringify({
+                    namePlayer,
+                    amountStep
+                })
+            };
+           
+            fetch('/session',reqOpt)
+            .then(function(response) {
+               
+                if(response.status === 200) {
+                    const message = `${namePlayer} your result success save in db`
+                    alert(message)
+                } else {
+                    const badMes = ` sorry ${namePlayer} your result not save in db`;
+                    alert(badMes);
+                }
+            }).catch( err=>{
+                console.log(err)
+                
+            });
         
         }
     }
